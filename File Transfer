@@ -1,0 +1,91 @@
+AIM
+To Perform File Transfer in Client & Server using TCP Sockets.
+ALGORITHM:
+CLIENT SIDE:
+ Step 1: Start.
+ Step 2: Establish a connection between the Client and Server.
+ Step 3: Socket ss=new Socket(InetAddress.getLocalHost(),1100);
+ Step 4: Implement a client that can send two requests.
+i) To get a file from the server.
+ii) To put or send a file to the server.
+Step 5: After getting approval from the server ,the client either get file from the server or send file 
+to the server.
+SERVER SIDE
+Step 1: Start.
+Step 2:Implement a server socket that listens to a particular port Number.
+Step 3:Server reads the filename and sends the data stored in the file for the‘get’request.
+Step 4:It reads the data from the input stream and writes it to a file in theserver for the 
+‘put’instruction.
+Step 5:Exit upon client’srequest.
+Step 6:Stop.
+PROGRAM CLIENT SIDE
+import java.net.*; 
+import java.io.*;
+public class FileClient{
+public static void main (String [] args ) throws IOException
+{
+int filesize=6022386;
+// filesize temporary hardcoded
+long start = System.currentTimeMillis();
+int bytesRead; 
+int current = 0;
+// localhost for testing
+Socket sock = new Socket("127.0.0.1",13267); 
+System.out.println("Connecting...");
+// receive file
+byte [] mybytearray = new byte [filesize];
+InputStream is = sock.getInputStream();
+FileOutputStream fos = new FileOutputStream("out.txt"); 
+BufferedOutputStream bos = new BufferedOutputStream(fos); 
+bytesRead = is.read(mybytearray,0,mybytearray.length);
+current = bytesRead; do {
+bytesRead =
+is.read(mybytearray, current, (mybytearray.length-current));
+if(bytesRead>= 0) current += bytesRead;
+} while(bytesRead> -1);
+bos.write(mybytearray, 0 , current); bos.flush();
+long end = System.currentTimeMillis(); 
+System.out.println(“Time take to receive the file: “+(end- start))+” milliseconds”); 
+bos.close();
+sock.close();
+}}
+SERVER SIDE
+import java.net.*;
+import java.io.*;
+public class FileServer
+{
+public static void main (String [] args ) throws IOException
+{
+ServerSocket servsock = new ServerSocket(13267);
+while (true)
+{
+System.out.println("Waiting..."); 
+Socket sock = servsock.accept();
+System.out.println("Accepted connection : " + sock); 
+File myFile= new File ("in.txt");
+byte [] mybytearray = new byte [(int)myFile.length()];
+FileInputStream fis = new FileInputStream(myFile);
+BufferedInputStream bis = new BufferedInputStream(fis); 
+bis.read(mybytearray,0,mybytearray.length);
+OutputStream os = sock.getOutputStream(); 
+System.out.println("Sending...");
+os.write(mybytearray,0,mybytearray.length);
+System.out.println("File Transferred Successfully.");
+os.flush();
+sock.close();
+}}}
+OUTPUT 
+SERVER OUTPUT
+C:\Program Files\Java\jdk1.6.0\bin>>javac FileServer.java
+C:\Program Files\Java\jdk1.6.0\bin>>java FileServer
+Waiting...
+Accepted connection : Socket[addr=/127.0.0.1,port=63789,localport=13267]
+Sending...
+File Transferred Successfully.
+CLIENT OUTPUT
+C:\Program Files\Java\jdk1.6.0\bin>javac FileClient.java 
+C:\Program Files\Java\jdk1.6.0\bin>>java FileClient
+Connecting...
+Time taken to receive the file: 47 milliseconds
+RESULT:
+Thus, the File transfer operation is done & executed successfully.
